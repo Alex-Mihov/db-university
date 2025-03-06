@@ -2,7 +2,7 @@
 
 SELECT  `students`.`name`,`students`.`surname`,`degrees`.`name`
 FROM `students`
-INNER JOIN `degrees` ON `degrees`.`id`= `students`.`degree_id`
+JOIN `degrees` ON `degrees`.`id`= `students`.`degree_id`
 WHERE `degrees`.`name` = 'Corso di Laurea in Economia'
 
 
@@ -13,7 +13,7 @@ Neuroscienze
 
 SELECT  `degrees`. `id`, `degrees`.`name`,`degrees`.`level`,`departments`.`id`,`departments`.`name`
 FROM `degrees`
-INNER JOIN `departments` ON `departments`.`id` = `degrees`.`department_id`
+JOIN `departments` ON `departments`.`id` = `degrees`.`department_id`
 WHERE `departments`.`name` = 'Dipartimento di Neuroscienze'
 AND `degrees`.`level` = 'magistrale'
 
@@ -24,8 +24,8 @@ AND `degrees`.`level` = 'magistrale'
 
 SELECT `teachers`.`id`,`teachers`.`name`,`teachers`.`surname`,`courses`.`id`,`courses`.`name`
 FROM `courses`
-INNER JOIN `course_teacher` ON `course_teacher`.`course_id`= `courses`.`id`
-INNER JOIN `teachers` ON `course_teacher`.`teacher_id`= `teachers`.`id`
+JOIN `course_teacher` ON `course_teacher`.`course_id`= `courses`.`id`
+JOIN `teachers` ON `teachers`.`id` = `course_teacher`.`teacher_id`
 WHERE `teachers`.`id` = 44;
 
 
@@ -36,8 +36,8 @@ nome
 
 SELECT `students`.`id`,`students`.`surname`,`students`.`name`,`degrees`.`id`,`degrees`.`name`,`degrees`.`level`,`departments`.`id`,`departments`.`name`
 FROM `students`
-INNER JOIN `degrees` ON `degrees`.`id` = `students`.`degree_id`
-INNER JOIN `departments` ON `departments`.`id` = `degrees`.`department_id`
+JOIN `degrees` ON `degrees`.`id` = `students`.`degree_id`
+JOIN `departments` ON `departments`.`id` = `degrees`.`department_id`
 ORDER BY `students`.`surname`,`students`.`name`
 
 
@@ -52,9 +52,9 @@ SELECT `degrees`.`id`,`degrees`.`name`AS`corso_laurea`,
 `courses`.`id`,`courses`.`name`AS `corsi_realtivi`,
 `teachers`.`id`,`teachers`.`name`,`teachers`.`surname`
 FROM `degrees`
-INNER JOIN `courses` ON `courses`.`degree_id` = `degrees`.`id`
-INNER JOIN `course_teacher` ON `course_teacher`.`course_id`= `courses`.`id`
-INNER JOIN `teachers` ON `course_teacher`.`teacher_id`= `teachers`.`id`
+JOIN `courses` ON `courses`.`degree_id` = `degrees`.`id`
+JOIN `course_teacher` ON `course_teacher`.`course_id`= `courses`.`id`
+JOIN `teachers` ON `course_teacher`.`teacher_id`= `teachers`.`id`
 ORDER BY `degrees`.`id`
 
 
@@ -63,10 +63,10 @@ Matematica (54)
 
 SELECT `teachers`.`id`,`teachers`.`name`,`teachers`.`surname`,`departments`.`id`,`departments`.`name`
 FROM `teachers`
-INNER JOIN `course_teacher` ON `course_teacher`.`teacher_id` = `teachers`.`id`
-INNER JOIN `courses` ON `course_teacher`.`course_id` = `courses`.`id`
-INNER JOIN `degrees` ON `degrees`.`id`= `courses`.`degree_id`
-INNER JOIN `departments` ON `departments`.`id` = `degrees`.`department_id`
+JOIN `course_teacher` ON `course_teacher`.`teacher_id` = `teachers`.`id`
+JOIN `courses` ON `course_teacher`.`course_id` = `courses`.`id`
+JOIN `degrees` ON `degrees`.`id`= `courses`.`degree_id`
+JOIN `departments` ON `departments`.`id` = `degrees`.`department_id`
 WHERE `departments`.`name` ='Dipartimento di Matematica'
 
 
@@ -81,17 +81,16 @@ SELECT
     `students`.`id`, 
     `students`.`name`, 
     `students`.`surname`, 
-    `exams`.`id`, 
-    `exams`.`date`, 
     `courses`.`name` AS `corso`, 
     COUNT(`exam_student`.`exam_id`) AS `num_tentativi`, 
     MAX(`exam_student`.`vote`) AS `voto_massimo`
 FROM `exam_student`
-JOIN `students` ON `exam_student`.`student_id` = `students`.`id`
-JOIN `exams` ON `exam_student`.`exam_id` = `exams`.`id`
-JOIN `courses` ON `exams`.`course_id` = `courses`.`id`
-WHERE `exam_student`.`vote` >= 18
-GROUP BY `students`.`id`, `exams`.`id`;
+JOIN `students` ON `students`.`id` = `exam_student`.`student_id`
+JOIN `exams` ON `exams`.`id` = `exam_student`.`exam_id`
+JOIN `courses` ON `courses`.`id` = `exams`.`course_id`
+GROUP BY `students`.`id`, `students`.`name`, `students`.`surname`, `courses`.`name`
+HAVING `voto_massimo` >= 18; 
+
 
 
 
